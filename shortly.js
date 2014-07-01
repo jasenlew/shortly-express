@@ -111,17 +111,18 @@ app.post('/login', function(req, res) {
   console.log('Username: ' + username);
   console.log('Password: ' + password);
 
-  new User({ username: username }).fetch().then(function(found) {
+  new User({ username: username, password: password }).fetch().then(function(found) {
     if (found) {
-      db.knex('users')
-        .where('username', '=', username)
-        .andWhere('password', '=', password)
-        .then(function () {
+      db.knex('users').where({
+        password: password,
+        username: username
+      }).then(function () {
           return res.render('index');
         });
       res.send(200, function () {
         res.render('login');
       });
+
     } else {
       console.log("Not a valid user.");
       res.render('login');
