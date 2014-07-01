@@ -15,15 +15,13 @@ app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(partials());
-  app.use(express.bodyParser())
+  app.use(express.bodyParser());
   app.use(express.static(__dirname + '/public'));
 });
 
 app.get('/', function(req, res) {
   res.render('login');
 });
-
-app.get('')
 
 app.get('/create', function(req, res) {
   res.render('index');
@@ -68,6 +66,8 @@ app.post('/links', function(req, res) {
   });
 });
 
+
+
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
@@ -78,6 +78,30 @@ app.get('/login', function(req, res){
 
 app.get('/signup', function(req, res){
   res.render('signup');
+});
+
+app.post('/signup', function(req, res) {
+  console.log("post func is working!");
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({ username: username }).fetch().then(function(found) {
+    if (found) {
+      res.send(200, function () {
+        res.render('login');
+      });
+    } else {
+      var user = new User({
+        username: username,
+        password: password
+      });
+
+      user.save().then(function(newUser) {
+        Users.add(newUser);
+        res.send(200, newUser);
+      });
+    }
+  });
 });
 
 /************************************************************/
