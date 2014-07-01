@@ -81,7 +81,7 @@ app.get('/signup', function(req, res){
 });
 
 app.post('/signup', function(req, res) {
-  console.log("post func is working!");
+  console.log("SIGNUP post func is working!");
   var username = req.body.username;
   var password = req.body.password;
 
@@ -100,6 +100,31 @@ app.post('/signup', function(req, res) {
         Users.add(newUser);
         res.send(200, newUser);
       });
+    }
+  });
+});
+
+app.post('/login', function(req, res) {
+  console.log("LOGIN post func is working!");
+  var username = req.body.username;
+  var password = req.body.password;
+  console.log('Username: ' + username);
+  console.log('Password: ' + password);
+
+  new User({ username: username }).fetch().then(function(found) {
+    if (found) {
+      db.knex('users')
+        .where('username', '=', username)
+        .andWhere('password', '=', password)
+        .then(function () {
+          return res.render('index');
+        });
+      res.send(200, function () {
+        res.render('login');
+      });
+    } else {
+      console.log("Not a valid user.");
+      res.render('login');
     }
   });
 });
